@@ -25,7 +25,10 @@ def crear_estaciones(hoja):
     cabecera_limpia = limpiar_textos(hoja.row_values(fila_cabecera))
     for i in range(fila_cabecera + 1, hoja.nrows):
         fila = limpiar_textos(hoja.row_values(i))
-        estacion = dict(zip(cabecera_limpia, fila))
+        estacion = {}
+        for nombre, valor in zip(cabecera_limpia, fila):
+            if nombre:
+                estacion[nombre] = valor
         estaciones.append(estacion)
     return estaciones
 
