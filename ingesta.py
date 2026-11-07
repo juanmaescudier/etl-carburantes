@@ -26,3 +26,19 @@ cabeceras_limpias_eess = limpiar_textos(hoja_eess.row_values(fila_cabecera_eess)
 print(repr(cabeceras_limpias_eess))
 cabeceras_limpias_maritimo = limpiar_textos(hoja_maritimo.row_values(fila_cabecera_maritimo))
 print(repr(cabeceras_limpias_maritimo))
+
+primera_fila = limpiar_textos(hoja_eess.row_values(fila_cabecera_eess + 1))
+
+primera_estacion = dict(zip(cabeceras_limpias_eess, primera_fila))
+print(primera_estacion)
+
+estaciones_eess = []
+
+for i in range(fila_cabecera_eess + 1, hoja_eess.nrows):
+    fila = limpiar_textos(hoja_eess.row_values(i))
+    estacion = dict(zip(cabeceras_limpias_eess, fila))
+    estaciones_eess.append(estacion)
+
+print(len(estaciones_eess))
+print(estaciones_eess[0])
+print(estaciones_eess[-1])
