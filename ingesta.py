@@ -12,9 +12,6 @@ def buscar_cabecera(hoja, columna_clave="Provincia"):
             return i
     return None
 
-fila_cabecera_eess = buscar_cabecera(hoja_eess)
-fila_cabecera_maritimo = buscar_cabecera(hoja_maritimo)
-
 def limpiar_textos(textos):
     lista_limpia = []
     for n in textos:
@@ -22,23 +19,15 @@ def limpiar_textos(textos):
         lista_limpia.append(limpio)
     return lista_limpia
 
-cabeceras_limpias_eess = limpiar_textos(hoja_eess.row_values(fila_cabecera_eess))
-print(repr(cabeceras_limpias_eess))
-cabeceras_limpias_maritimo = limpiar_textos(hoja_maritimo.row_values(fila_cabecera_maritimo))
-print(repr(cabeceras_limpias_maritimo))
+def crear_estaciones(hoja):
+    estaciones = []
+    fila_cabecera = buscar_cabecera(hoja)
+    cabecera_limpia = limpiar_textos(hoja.row_values(fila_cabecera))
+    for i in range(fila_cabecera + 1, hoja.nrows):
+        fila = limpiar_textos(hoja.row_values(i))
+        estacion = dict(zip(cabecera_limpia, fila))
+        estaciones.append(estacion)
+    return estaciones
 
-primera_fila = limpiar_textos(hoja_eess.row_values(fila_cabecera_eess + 1))
-
-primera_estacion = dict(zip(cabeceras_limpias_eess, primera_fila))
-print(primera_estacion)
-
-estaciones_eess = []
-
-for i in range(fila_cabecera_eess + 1, hoja_eess.nrows):
-    fila = limpiar_textos(hoja_eess.row_values(i))
-    estacion = dict(zip(cabeceras_limpias_eess, fila))
-    estaciones_eess.append(estacion)
-
-print(len(estaciones_eess))
-print(estaciones_eess[0])
-print(estaciones_eess[-1])
+estaciones_eess = crear_estaciones(hoja_eess)
+estaciones_maritimo = crear_estaciones(hoja_maritimo)
