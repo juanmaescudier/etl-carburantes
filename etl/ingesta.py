@@ -19,11 +19,6 @@ def main():
     fecha_eess = leer_fecha_fichero(hoja_eess)
     fecha_maritimo = leer_fecha_fichero(hoja_maritimo)
 
-    print(f"Estaciones terrestres: {len(estaciones_eess)}")
-    print(f"Estaciones marítimas: {len(estaciones_maritimo)}")
-    print(f"Fecha de generación del documento en GeoPortal de terrestre: {fecha_eess}")
-    print(f"Fecha de generación del documento en GeoPortal de marítimo: {fecha_maritimo}")
-
 
 if __name__ == "__main__":
     main()
