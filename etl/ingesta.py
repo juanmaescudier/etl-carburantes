@@ -1,9 +1,15 @@
 """Punto de entrada del proceso de ingesta"""
 
+from pathlib import Path
 from etl.extraccion import crear_estaciones, leer_fecha_fichero, abrir_hoja
 
-hoja_eess = abrir_hoja("../data/preciosEESS_es.xls")
-hoja_maritimo = abrir_hoja("../data/embarcacionesPrecios_es.xls")
+RAIZ = Path(__file__).resolve().parent.parent
+DATOS = RAIZ / "data"
+RUTA_EESS = DATOS / "preciosEESS_es.xls"
+RUTA_MARITIMO = DATOS / "embarcacionesPrecios_es.xls"
+
+hoja_eess = abrir_hoja(RUTA_EESS)
+hoja_maritimo = abrir_hoja(RUTA_MARITIMO)
 
 estaciones_eess = crear_estaciones(hoja_eess)
 estaciones_maritimo = crear_estaciones(hoja_maritimo)
