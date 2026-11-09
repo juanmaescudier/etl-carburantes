@@ -7,6 +7,9 @@ import unicodedata
 
 COLUMNAS_DECIMALES = ("Longitud", "Latitud", "% bioalcohol", "% éster metílico")
 EMPRESA_DESCONOCIDA = "DESCONOCIDA"
+# Rótulos que el Ministerio usa para indicar que la estación no tiene marca.
+# Se comparan ya sin tildes, después de quitar_tildes().
+ROTULOS_SIN_MARCA = {"(SIN ROTULO)", "SIN ROTULO", "-", "NO TIENE"}
 TIPOS_VENTA = {"P": "Venta al público en general"}
 
 
@@ -53,8 +56,9 @@ def transformar_estacion(estacion, tipo):
     """Devuelve un diccionario nuevo con cada valor convertido a su tipo.
 
     Añade la clave "tipo" con el valor recibido ("T" terrestre, "M" marítima).
-    Los rótulos vacíos pasan a EMPRESA_DESCONOCIDA y las siglas de
-    tipo de venta se traducen con TIPOS_VENTA."""
+    Los rótulos vacíos o sin marca (ROTULOS_SIN_MARCA) pasan a
+    EMPRESA_DESCONOCIDA, y las siglas de tipo de venta se traducen
+    con TIPOS_VENTA."""
     resultado = {"tipo": tipo}
     for clave, valor in estacion.items():
         if clave.startswith("Precio") or clave in COLUMNAS_DECIMALES:
@@ -62,10 +66,11 @@ def transformar_estacion(estacion, tipo):
         elif clave == "Toma de datos":
             resultado[clave] = a_fecha(valor)
         elif clave == "Rótulo":
-            if valor:
-                resultado[clave] = quitar_tildes(valor)
-            else:
+            nombre = quitar_tildes(valor)
+            if not nombre or nombre in ROTULOS_SIN_MARCA:
                 resultado[clave] = EMPRESA_DESCONOCIDA
+            else:
+                resultado[clave] = nombre
         elif clave == "Tipo venta":
             resultado[clave] = TIPOS_VENTA.get(valor, valor)
         else:
