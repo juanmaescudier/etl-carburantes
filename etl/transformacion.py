@@ -5,6 +5,8 @@ from decimal import Decimal
 from datetime import datetime
 
 COLUMNAS_DECIMALES = ("Longitud", "Latitud", "% bioalcohol", "% éster metílico")
+EMPRESA_DESCONOCIDA = "DESCONOCIDA"
+TIPOS_VENTA = {"P": "Venta al público en general"}
 
 
 def vacio_a_none(texto):
@@ -32,22 +34,33 @@ def a_fecha(texto):
     return datetime.strptime(texto, "%d/%m/%Y %H:%M")
 
 
-def transformar_estacion(estacion):
-    """Devuelve un diccionario nuevo con cada valor convertido a su tipo"""
-    resultado = {}
+def transformar_estacion(estacion, tipo):
+    """Devuelve un diccionario nuevo con cada valor convertido a su tipo.
+
+    Añade la clave "tipo" con el valor recibido ("T" terrestre, "M" marítima).
+    Los rótulos vacíos pasan a EMPRESA_DESCONOCIDA y las siglas de
+    tipo de venta se traducen con TIPOS_VENTA."""
+    resultado = {"tipo": tipo}
     for clave, valor in estacion.items():
         if clave.startswith("Precio") or clave in COLUMNAS_DECIMALES:
             resultado[clave] = a_decimal(valor)
         elif clave == "Toma de datos":
             resultado[clave] = a_fecha(valor)
+        elif clave == "Rótulo":
+            if valor:
+                resultado[clave] = valor
+            else:
+                resultado[clave] = EMPRESA_DESCONOCIDA
+        elif clave == "Tipo venta":
+            resultado[clave] = TIPOS_VENTA.get(valor, valor)
         else:
             resultado[clave] = vacio_a_none(valor)
     return resultado
 
 
-def transformar_estaciones(estaciones):
-    """Devuelve la lista de las estaciones ya transformadas"""
+def transformar_estaciones(estaciones, tipo):
+    """Devuelve la lista de estaciones transformadas, todas con el tipo indicado ("T" o "M")."""
     transformadas = []
     for estacion in estaciones:
-        transformadas.append(transformar_estacion(estacion))
+        transformadas.append(transformar_estacion(estacion, tipo))
     return transformadas

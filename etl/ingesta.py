@@ -18,8 +18,8 @@ def main():
     estaciones_eess = crear_estaciones(hoja_eess)
     estaciones_maritimo = crear_estaciones(hoja_maritimo)
 
-    estaciones_eess = transformar_estaciones(estaciones_eess)
-    estaciones_maritimo = transformar_estaciones(estaciones_maritimo)
+    estaciones_eess = transformar_estaciones(estaciones_eess, "T")
+    estaciones_maritimo = transformar_estaciones(estaciones_maritimo, "M")
 
     fecha_eess = a_fecha(leer_fecha_fichero(hoja_eess))
     fecha_maritimo = a_fecha(leer_fecha_fichero(hoja_maritimo))
