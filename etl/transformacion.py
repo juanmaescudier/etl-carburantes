@@ -3,6 +3,7 @@ a su tipo correspondiente (str, Decimal, datetime y None)"""
 
 from decimal import Decimal
 from datetime import datetime
+import unicodedata
 
 COLUMNAS_DECIMALES = ("Longitud", "Latitud", "% bioalcohol", "% éster metílico")
 EMPRESA_DESCONOCIDA = "DESCONOCIDA"
@@ -14,6 +15,20 @@ def vacio_a_none(texto):
     if not texto:
         return None
     return texto
+
+
+def quitar_tildes(texto):
+    """Devuelve el texto sin tildes (también convierte la Ñ en N).
+
+    Se usa para unificar nombres de empresa que el Ministerio escribe de
+    varias formas (ENERGIA / ENERGÍA).
+    """
+    descompuesto = unicodedata.normalize("NFD", texto)
+    letras = []
+    for caracter in descompuesto:
+        if not unicodedata.combining(caracter):
+            letras.append(caracter)
+    return "".join(letras)
 
 
 def a_decimal(texto):
@@ -48,7 +63,7 @@ def transformar_estacion(estacion, tipo):
             resultado[clave] = a_fecha(valor)
         elif clave == "Rótulo":
             if valor:
-                resultado[clave] = valor
+                resultado[clave] = quitar_tildes(valor)
             else:
                 resultado[clave] = EMPRESA_DESCONOCIDA
         elif clave == "Tipo venta":

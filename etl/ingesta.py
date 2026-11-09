@@ -3,6 +3,7 @@
 from pathlib import Path
 from etl.extraccion import crear_estaciones, leer_fecha_fichero, abrir_hoja
 from etl.transformacion import transformar_estaciones, a_fecha, extraer_precios
+from etl.carga import conectar_mysql, comprobar_conexion
 
 RAIZ = Path(__file__).resolve().parent.parent
 DATOS = RAIZ / "data"
@@ -31,6 +32,10 @@ def main():
         total_precios += len(extraer_precios(estacion))
 
     print(total_precios)
+
+    conexion = conectar_mysql()
+    comprobar_conexion(conexion)
+
 
 if __name__ == "__main__":
     main()
