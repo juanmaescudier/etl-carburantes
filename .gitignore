@@ -219,5 +219,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-#ignorar carpeta .idea de pycharm
+# Ignorar carpeta .idea de pycharm
 .idea/
+
+# Ignora los bloqueos y copias de seguridad de Visual Paradigm
+*.lck
+*.bak_*
