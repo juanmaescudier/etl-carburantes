@@ -64,3 +64,17 @@ def transformar_estaciones(estaciones, tipo):
     for estacion in estaciones:
         transformadas.append(transformar_estacion(estacion, tipo))
     return transformadas
+
+
+def extraer_precios(estacion):
+    """Devuelve una lista de tuplas (carburante, precio) de una estación.
+
+        Solo incluye los carburantes con precio. El nombre del carburante es
+        el de la columna sin el prefijo "Precio ".
+        """
+    precios = []
+    for clave, valor in estacion.items():
+        if clave.startswith("Precio") and valor is not None:
+            nombre = clave.removeprefix("Precio ")
+            precios.append((nombre, valor))
+    return precios

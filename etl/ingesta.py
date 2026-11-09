@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from etl.extraccion import crear_estaciones, leer_fecha_fichero, abrir_hoja
-from etl.transformacion import transformar_estaciones, a_fecha
+from etl.transformacion import transformar_estaciones, a_fecha, extraer_precios
 
 RAIZ = Path(__file__).resolve().parent.parent
 DATOS = RAIZ / "data"
@@ -24,6 +24,13 @@ def main():
     fecha_eess = a_fecha(leer_fecha_fichero(hoja_eess))
     fecha_maritimo = a_fecha(leer_fecha_fichero(hoja_maritimo))
 
+    total_precios = 0
+    for estacion in estaciones_eess:
+        total_precios += len(extraer_precios(estacion))
+    for estacion in estaciones_maritimo:
+        total_precios += len(extraer_precios(estacion))
+
+    print(total_precios)
 
 if __name__ == "__main__":
     main()
