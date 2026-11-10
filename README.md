@@ -102,15 +102,6 @@ Las cinco preguntas de la actividad están en [`sql/consultas.sql`](sql/consulta
 
 Las distancias se calculan en línea recta con `ST_Distance_Sphere`, no por carretera. Los empates se han comprobado ejecutando cada consulta sin `LIMIT`.
 
-## Hoja de ruta
-
-- [x] Extracción de los `.xls`
-- [x] Transformación y normalización
-- [x] Modelo conceptual, modelo relacional y DDL
-- [x] Carga de empresas y carburantes
-- [x] Carga de gasolineras y precios
-- [x] Consultas SQL de análisis
-
 ## Licencia
 
 [MIT](LICENSE)
