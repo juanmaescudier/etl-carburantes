@@ -90,14 +90,14 @@ python -m etl.ingesta
 
 ## Consultas
 
-Las cinco preguntas de la actividad están en [`sql/consultas.sql`](sql/consultas.sql), y sus resultados exportados en `docs/resultados/`. Con los datos del 03/11/2026:
+Las cinco preguntas de la actividad están en [`sql/consultas.sql`](sql/consultas.sql), y sus resultados exportados en [`docs/resultados_consultas/`](docs/resultados_consultas/). Con los datos del 03/11/2026:
 
 | Pregunta | Respuesta |
 |---|---|
 | Empresa con más estaciones terrestres | REPSOL, con 2.753 |
 | Empresa con más estaciones marítimas | REPSOL, con 70 de 135 |
 | Gasolina 95 E5 más barata en Madrid | Cuatro estaciones empatadas a 1,499 €, en Valdemoro |
-| Gasóleo A más barato a menos de 10 km del centro de Albacete | PLENERGY, C/ Federico García Lorca 1: 1,729 € a 0,75 km (la más cercana de cuatro empatadas) |
+| Gasóleo A más barato a menos de 10 km del centro de Albacete | PLENERGY, C/ Federico García Lorca 1: 1,729 € a 0,746 km (la más cercana de cuatro empatadas) |
 | Provincia de la estación marítima con la Gasolina 95 E5 más cara | PONTEVEDRA, a 2,200 € |
 
 Las distancias se calculan en línea recta con `ST_Distance_Sphere`, no por carretera. Los empates se han comprobado ejecutando cada consulta sin `LIMIT`.
