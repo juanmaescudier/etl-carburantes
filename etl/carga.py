@@ -7,6 +7,7 @@ si algo falla, se deshace la carga entera.
 import os
 import pymysql
 from dotenv import load_dotenv
+from etl.transformacion import extraer_precios
 
 
 SQL_GASOLINERA = """
@@ -15,6 +16,10 @@ SQL_GASOLINERA = """
         direccion, margen, latitud, longitud, fecha_toma_datos, horario,
         tipo_venta, rem, tipo_servicio, pct_bioalcohol, pct_ester_metilico
     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+"""
+SQL_PRECIO = """
+    INSERT INTO precio (gasolinera_id, carburante_id, precio)
+    VALUES (%s, %s, %s)
 """
 
 
@@ -114,6 +119,22 @@ def cargar_gasolineras(conexion, estaciones, ids_empresas):
         return ids
 
 
+def cargar_precios(conexion, estaciones, ids_gasolineras, ids_carburantes):
+    """Inserta los precios de cada gasolinera y devuelve cuántos ha insertado.
+
+    Recorre estaciones e ids_gasolineras a la vez, emparejados por posición
+    (strict=True da error si las listas no miden lo mismo). Cada carburante
+    se traduce a su id con ids_carburantes.
+    """
+    with conexion.cursor() as cursor:
+        contador = 0
+        for estacion, gasolinera_id in zip(estaciones, ids_gasolineras, strict=True):
+            for nombre, precio in extraer_precios(estacion):
+                cursor.execute(SQL_PRECIO, (gasolinera_id, ids_carburantes[nombre], precio))
+                contador += 1
+        return contador
+
+
 def cargar(estaciones_eess, estaciones_maritimo):
     """Carga todas las estaciones en MySQL en una única transacción."""
     estaciones = estaciones_eess + estaciones_maritimo
@@ -122,8 +143,9 @@ def cargar(estaciones_eess, estaciones_maritimo):
         ids_empresas = cargar_empresas(conexion, estaciones)
         ids_carburantes = cargar_carburantes(conexion, estaciones)
         ids_gasolineras = cargar_gasolineras(conexion, estaciones, ids_empresas)
+        contador_precios = cargar_precios(conexion, estaciones, ids_gasolineras, ids_carburantes)
         print(f"Empresas: {len(ids_empresas)} | Carburantes: {len(ids_carburantes)} "
-              f"| Gasolineras: {len(ids_gasolineras)}")
+              f"| Gasolineras: {len(ids_gasolineras)} | Precios: {contador_precios}")
         conexion.commit()
     except Exception:
         conexion.rollback()
