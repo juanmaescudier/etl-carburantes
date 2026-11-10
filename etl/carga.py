@@ -37,6 +37,19 @@ def conectar_mysql():
     return conexion
 
 
+def vaciar_tablas(conexion):
+    """Borra todas las filas de las tablas, de las hijas a las padres.
+
+    Va dentro de la transacción de la carga: si la carga falla, el rollback
+    también deshace este borrado y la base conserva los datos anteriores.
+    """
+    with conexion.cursor() as cursor:
+        cursor.execute("DELETE FROM precio")
+        cursor.execute("DELETE FROM gasolinera")
+        cursor.execute("DELETE FROM carburante")
+        cursor.execute("DELETE FROM empresa")
+
+
 def cargar_empresas(conexion, estaciones):
     """Inserta las empresas sin repetir y devuelve un diccionario {nombre: id}.
 
@@ -140,6 +153,7 @@ def cargar(estaciones_eess, estaciones_maritimo):
     estaciones = estaciones_eess + estaciones_maritimo
     conexion = conectar_mysql()
     try:
+        vaciar_tablas(conexion)
         ids_empresas = cargar_empresas(conexion, estaciones)
         ids_carburantes = cargar_carburantes(conexion, estaciones)
         ids_gasolineras = cargar_gasolineras(conexion, estaciones, ids_empresas)
