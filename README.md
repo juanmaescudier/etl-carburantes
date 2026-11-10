@@ -48,7 +48,7 @@ Cuatro tablas: `empresa`, `gasolinera`, `carburante` y `precio`. El precio no es
 - **Terrestres y marítimas en la misma tabla**, con una columna `tipo`. Comparten casi todos los atributos; separarlas duplicaría la estructura y la tabla de precios.
 - **Los precios pasan de columnas a filas.** Cada estación trae 25 columnas de precio, casi todas vacías. En el fichero del 03/11/2026 eso se queda en 43.093 precios reales.
 - **Nombres de empresa normalizados.** El Ministerio escribe a veces el mismo operador con y sin tildes (`ALIARA ENERGIA` / `ALIARA ENERGÍA`), y MySQL los consideraría duplicados. Se quitan las tildes para unificarlos.
-- **Empresa `DESCONOCIDA`** para las estaciones sin rótulo y para las variantes que significan lo mismo (`SIN ROTULO`, `(SIN ROTULO)`, `-`, `NO TIENE`).
+- **Empresa `DESCONOCIDA`** para las estaciones sin rótulo y para las variantes que significan lo mismo (`SIN ROTULO`, `(SIN ROTULO)`, `-`, `NO TIENE`, `NINGUNO`).
 - **No se inventan datos.** Si un valor no viene (la fecha de toma de datos o el margen en las marítimas, coordenadas que faltan), se guarda como `NULL`.
 
 ## Estructura
