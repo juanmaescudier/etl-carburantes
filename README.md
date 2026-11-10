@@ -4,7 +4,7 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?logo=mysql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![Licencia](https://img.shields.io/badge/licencia-MIT-green)
-![Estado](https://img.shields.io/badge/estado-en%20desarrollo-orange)
+![Estado](https://img.shields.io/badge/estado-completado-brightgreen)
 
 Proceso ETL en Python que carga en MySQL los precios de carburantes que publica el **Ministerio para la Transición Ecológica y el Reto Demográfico** en su [Geoportal de gasolineras](https://geoportalgasolineras.es/geoportal-instalaciones/DescargarFicheros), tanto de estaciones terrestres como de postes marítimos.
 
@@ -41,7 +41,7 @@ Proyecto de la asignatura *Bases de Datos Avanzadas* (UNIR).
 
 ![Modelo relacional](docs/Diagrama%20E-R%20etl-carburantes.png)
 
-Cuatro tablas: `empresa`, `gasolinera`, `carburante` y `precio`. El precio no es un atributo de la gasolinera ni del carburante, sino de la combinación de los dos, así que vive en la tabla intermedia, con una única fila por cada carburante que la estación vende de verdad. El DDL está en [`sql/schema.sql`](sql/schema.sql).
+Cuatro tablas: `empresa`, `gasolinera`, `carburante` y `precio`. El precio no es un atributo de la gasolinera ni del carburante, sino de la combinación de los dos, así que vive en la tabla intermedia, con una única fila por cada carburante que la estación vende de verdad. El DDL está en [`sql/esquema.sql`](sql/esquema.sql).
 
 ## Decisiones sobre los datos
 
@@ -56,9 +56,9 @@ Cuatro tablas: `empresa`, `gasolinera`, `carburante` y `precio`. El precio no es
 ```
 etl-carburantes/
 ├── data/          # ficheros .xls del Geoportal (foto del 03/11/2026)
-├── docs/          # diagramas E-R
+├── docs/          # diagramas E-R y resultados de las consultas
 ├── etl/           # código del ETL
-├── sql/           # DDL del esquema
+├── sql/           # DDL del esquema y consultas de análisis
 ├── docker-compose.yml
 ├── requirements.in / requirements.txt
 └── .env.example
@@ -81,12 +81,26 @@ copy .env.example .env          # Windows  (en Linux/macOS: cp .env.example .env
 docker compose up -d
 ```
 
-4. Crear las tablas ejecutando `sql/schema.sql` con tu cliente de MySQL (DataGrip, DBeaver o `mysql`).
+4. Crear las tablas ejecutando `sql/esquema.sql` con tu cliente de MySQL (DataGrip, DBeaver o `mysql`).
 5. Lanzar la ingesta desde la raíz del proyecto:
 
 ```bash
 python -m etl.ingesta
 ```
+
+## Consultas
+
+Las cinco preguntas de la actividad están en [`sql/consultas.sql`](sql/consultas.sql), y sus resultados exportados en `docs/resultados/`. Con los datos del 03/11/2026:
+
+| Pregunta | Respuesta |
+|---|---|
+| Empresa con más estaciones terrestres | REPSOL, con 2.753 |
+| Empresa con más estaciones marítimas | REPSOL, con 70 de 135 |
+| Gasolina 95 E5 más barata en Madrid | Cuatro estaciones empatadas a 1,499 €, en Valdemoro |
+| Gasóleo A más barato a menos de 10 km del centro de Albacete | PLENERGY, C/ Federico García Lorca 1: 1,729 € a 0,75 km (la más cercana de cuatro empatadas) |
+| Provincia de la estación marítima con la Gasolina 95 E5 más cara | PONTEVEDRA, a 2,200 € |
+
+Las distancias se calculan en línea recta con `ST_Distance_Sphere`, no por carretera. Los empates se han comprobado ejecutando cada consulta sin `LIMIT`.
 
 ## Hoja de ruta
 
@@ -94,8 +108,8 @@ python -m etl.ingesta
 - [x] Transformación y normalización
 - [x] Modelo conceptual, modelo relacional y DDL
 - [x] Carga de empresas y carburantes
-- [ ] Carga de gasolineras y precios
-- [ ] Consultas SQL de análisis
+- [x] Carga de gasolineras y precios
+- [x] Consultas SQL de análisis
 
 ## Licencia
 
