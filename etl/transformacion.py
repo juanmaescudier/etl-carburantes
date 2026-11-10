@@ -9,7 +9,7 @@ COLUMNAS_DECIMALES = ("Longitud", "Latitud", "% bioalcohol", "% éster metílico
 EMPRESA_DESCONOCIDA = "DESCONOCIDA"
 # Rótulos que el Ministerio usa para indicar que la estación no tiene marca.
 # Se comparan ya sin tildes, después de quitar_tildes().
-ROTULOS_SIN_MARCA = {"(SIN ROTULO)", "SIN ROTULO", "-", "NO TIENE"}
+ROTULOS_SIN_MARCA = {"(SIN ROTULO)", "SIN ROTULO", "-", "NO TIENE", "NINGUNO"}
 TIPOS_VENTA = {"P": "Venta al público en general"}
 
 
