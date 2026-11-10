@@ -51,6 +51,16 @@ LIMIT 4;
 
 -- Consulta 4: Estación con el precio más bajo para Gasóleo A si resido en el
 -- centro de Albacete y no quiero desplazarme más de 10 km.
+--
+-- Las coordenadas de @lat_centro y @lon_centro son el punto tomado como
+-- centro de Albacete. La distancia se calcula en línea recta con
+-- ST_Distance_Sphere (en metros; se divide entre 1000 para mostrarla en km),
+-- no por carretera. Ojo: POINT recibe primero la longitud y luego la latitud.
+--
+-- Comprobado ejecutando la consulta sin LIMIT: 40 estaciones a menos de
+-- 10 km venden Gasóleo A y 4 empatan en el precio mínimo (1,729 €). Por eso
+-- se ordena por PRECIO y, en caso de empate, por DISTANCIA_KM: así LIMIT 1
+-- devuelve siempre la más cercana de las más baratas, y no una cualquiera.
 
 SET @lat_centro = 38.99485260992702;
 SET @lon_centro = -1.8536802323420551;
