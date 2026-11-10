@@ -1,6 +1,21 @@
+"""Carga de las estaciones transformadas en MySQL.
+
+Todas las inserciones van en una única conexión y una única transacción:
+si algo falla, se deshace la carga entera.
+"""
+
 import os
 import pymysql
 from dotenv import load_dotenv
+
+
+SQL_GASOLINERA = """
+    INSERT INTO gasolinera (
+        empresa_id, tipo, provincia, municipio, localidad, codigo_postal,
+        direccion, margen, latitud, longitud, fecha_toma_datos, horario,
+        tipo_venta, rem, tipo_servicio, pct_bioalcohol, pct_ester_metilico
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+"""
 
 
 def conectar_mysql():
@@ -42,9 +57,10 @@ def cargar_empresas(conexion, estaciones):
 def cargar_carburantes(conexion, estaciones):
     """Inserta los carburantes sin repetir y devuelve un diccionario {carburante: id}.
 
-        Los carburantes salen de la cabecera de Precios. El diccionario se usa
-        después para obtener el carburante_id de cada gasolinera.
-        """
+    Los nombres salen de las columnas "Precio ..." de las estaciones, sin el
+    prefijo. Incluye también los carburantes que ninguna gasolinera vende.
+    El diccionario se usa después para obtener el carburante_id de cada precio.
+    """
     nombres = set()
     for estacion in estaciones:
         for clave in estacion:
@@ -63,6 +79,41 @@ def cargar_carburantes(conexion, estaciones):
     return ids
 
 
+def cargar_gasolineras(conexion, estaciones, ids_empresas):
+    """Inserta las gasolineras y devuelve la lista de sus id.
+
+    La lista va en el mismo orden que estaciones: ids[i] es el id que MySQL
+    ha asignado a estaciones[i]. Se obtiene con cursor.lastrowid justo
+    después de cada INSERT, porque ningún campo de la gasolinera es único.
+    Las columnas que las marítimas no traen se leen con .get() y quedan a NULL.
+    """
+    with conexion.cursor() as cursor:
+        ids = []
+        for estacion in estaciones:
+            valores = (
+                ids_empresas[estacion["Rótulo"]],
+                estacion["tipo"],
+                estacion["Provincia"],
+                estacion["Municipio"],
+                estacion["Localidad"],
+                estacion["Código postal"],
+                estacion["Dirección"],
+                estacion.get("Margen"),
+                estacion["Latitud"],
+                estacion["Longitud"],
+                estacion.get("Toma de datos"),
+                estacion["Horario"],
+                estacion["Tipo venta"],
+                estacion["Rem."],
+                estacion.get("Tipo servicio"),
+                estacion.get("% bioalcohol"),
+                estacion.get("% éster metílico"),
+            )
+            cursor.execute(SQL_GASOLINERA, valores)
+            ids.append(cursor.lastrowid)
+        return ids
+
+
 def cargar(estaciones_eess, estaciones_maritimo):
     """Carga todas las estaciones en MySQL en una única transacción."""
     estaciones = estaciones_eess + estaciones_maritimo
@@ -70,7 +121,9 @@ def cargar(estaciones_eess, estaciones_maritimo):
     try:
         ids_empresas = cargar_empresas(conexion, estaciones)
         ids_carburantes = cargar_carburantes(conexion, estaciones)
-        print(f"Empresas: {len(ids_empresas)} | Carburantes: {len(ids_carburantes)}")
+        ids_gasolineras = cargar_gasolineras(conexion, estaciones, ids_empresas)
+        print(f"Empresas: {len(ids_empresas)} | Carburantes: {len(ids_carburantes)} "
+              f"| Gasolineras: {len(ids_gasolineras)}")
         conexion.commit()
     except Exception:
         conexion.rollback()
