@@ -109,3 +109,10 @@ FROM carburante c
 WHERE g.tipo='M' AND c.nombre='gasolina 95 E5'
 ORDER BY PRECIO DESC
 LIMIT 1;
+
+-- Chequeo para comprobar si las tablas están vacías o no
+
+SELECT 'empresa' AS tabla, COUNT(*) AS filas FROM empresa
+UNION ALL SELECT 'carburante', COUNT(*) FROM carburante
+UNION ALL SELECT 'gasolinera', COUNT(*) FROM gasolinera
+UNION ALL SELECT 'precio', COUNT(*) FROM precio;
